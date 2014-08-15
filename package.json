@@ -13,7 +13,8 @@
     "mocha": "^1.21.4",
     "q": "^1.0.0",
     "request": "^2.34.0",
-    "underscore": "^1.6.0"
+    "underscore": "^1.6.0",
+    "mysql2": "~0.12.5"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test/test.js"

@@ -1,14 +1,19 @@
 // var path = require('path');
-var fs = require('fs');
 var url = require('url');
+var mysql = require('mysql2');
 var crypto = require('cryptojs');
-var httpHelper = require('./http-helpers.js');
 var _ = require('underscore');
 var path = require('path');
+var httpHelper = require('./http-helpers.js');
 var archive = require(path.join(__dirname, '../helpers/archive-helpers.js'));
 
 // require more modules/folders here!
 
+var connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "web_historian"
+});
 
 var handleGet = function(req, res) {
   var parsedUrl = url.parse(req.url);
@@ -19,7 +24,8 @@ var handleGet = function(req, res) {
     httpHelper.serveAssets(res, archive.paths.siteAssets + parsedUrl.pathname);
   } else {
     var hash = crypto.Crypto.SHA1(parsedUrl.pathname.substr(1));
-    httpHelper.serveAssets(res, archive.paths.archivedSites + hash);
+    var siteName = archive.paths.archivedSites + hash + '.html';
+    httpHelper.serveAssets(res, siteName);
   }
 };
 
@@ -30,15 +36,19 @@ var handlePost = function(req, res) {
   });
   req.on('end', function() {
     body = body.substr(4);
+    body = decodeURIComponent(body);
+    console.log("decoded URI: " + body);
     // check to see if we already have the requested static file archived
     // if so, serve it up
-    fs.appendFile(archive.paths.list, body + '\n', function(error) {
+    var post = { url: body, downloaded: 'false' };
+    connection.query('INSERT INTO Sites SET ?', post, function(error) {
       if (error) {
-        res.writeHead(500, 'Append to site.txt failed');
+        res.writeHead(500, "Insert to database failed");
+        res.end("Server Error");
       } else {
         res.writeHead(302, {'Location': 'loading.html'});
+        res.end();
       }
-      res.end();
     });
   });
 };

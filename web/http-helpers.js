@@ -15,7 +15,7 @@ exports.serveAssets = function(res, asset, callback) {
   // (Static files are things like html (yours or archived from
   // others...), css, or anything that doesn't change often.)
   var ext = asset.substr(asset.lastIndexOf('.')+1);
-
+  console.log('Serving up asset: ' + asset);
   var contentType = 'text/html';
   switch (ext) {
     case 'html' : contentType = 'text/html';              break;
@@ -30,7 +30,7 @@ exports.serveAssets = function(res, asset, callback) {
       fs.readFile(asset, function(error, content) {
         if (error) {
           res.writeHead(500);
-          res.end();
+          res.end("Server Error");
         }
         else {
           res.writeHead(200, { 'Content-Type': contentType });
@@ -40,12 +40,9 @@ exports.serveAssets = function(res, asset, callback) {
 
     } else {
       res.writeHead(404);
-      res.end();
+      res.end("File Not Found");
     }
   });
 };
-
-
-
 
 // As you progress, keep thinking about what helper functions you can put here!
