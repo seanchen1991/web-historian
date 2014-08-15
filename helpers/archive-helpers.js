@@ -56,12 +56,12 @@ exports.log = function(string) {
 };
 
 exports.downloadUrl = function(url, callback){
-  var hash = crypto.Crypto.SHA1(url);
-  var filename = exports.paths.archivedSites + hash + '.html';
-  exports.log("downloading: "+url+" to: "+filename);
 
-  saltwaterc.get({ url: url }, filename, function (err, res) {
-    connection.query('UPDATE Sites SET downloaded = 1 WHERE url = ?', [url], function(error) {
+  saltwaterc.get({ url: url }, function (err, res) {
+    var content = res.buffer.toString();
+    var sql = "UPDATE Sites SET downloaded = 1, Content ='"+content+"' WHERE url = '"+url+"'";
+
+    connection.query(sql, function(error) {
       if (error) {
         exports.log(error);
         exports.log('Error when updating table');

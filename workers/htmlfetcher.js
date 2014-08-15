@@ -17,7 +17,7 @@ var cronJob = function() {
 
     } else {
 
-      archive.log("read list of urls"+JSON.stringify(result));
+
       for (var i = 0; i < result.length; i++) {
 
         archive.log("downloading: "+result[i]['url']);
@@ -27,15 +27,12 @@ var cronJob = function() {
           }
         });
       }
-      archive.log("after for loop");
-    }
 
-    archive.log("leaving readListOfURLs callback");
+    }
     archive.closeMysql();
   });
 
-  archive.log("leaving cronJob()");
+
 };
 
 cronJob();
-archive.log("leaving script");
